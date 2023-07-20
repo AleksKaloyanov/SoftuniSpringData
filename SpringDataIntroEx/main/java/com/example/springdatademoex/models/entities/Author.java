@@ -1,8 +1,6 @@
 package com.example.springdatademoex.models.entities;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 import java.util.Set;
 
@@ -11,6 +9,7 @@ import java.util.Set;
 public class Author extends BaseEntity {
     private String firstName;
     private String lastName;
+    private Set<Book> books;
 
     public Author() {
     }
@@ -36,5 +35,14 @@ public class Author extends BaseEntity {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    @OneToMany(mappedBy = "author")
+    public Set<Book> getBooks() {
+        return books;
+    }
+
+    public void setBooks(Set<Book> books) {
+        this.books = books;
     }
 }

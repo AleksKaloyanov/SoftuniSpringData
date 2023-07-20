@@ -8,6 +8,9 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 
 @Service
 public class AuthorServiceImpl implements AuthorService {
@@ -20,7 +23,7 @@ public class AuthorServiceImpl implements AuthorService {
 
     @Override
     public void seedAuthors() throws IOException {
-        if (authorRepository.count()>0){
+        if (authorRepository.count() > 0) {
             return;
         }
 
@@ -30,4 +33,16 @@ public class AuthorServiceImpl implements AuthorService {
                     authorRepository.save(new Author(fullName[0], fullName[1]));
                 });
     }
+
+    @Override
+    public Author getRandomAuthor() {
+        Long randomId = ThreadLocalRandom.current().nextLong(1, authorRepository.count() + 1);
+
+        return authorRepository.getAuthorById(randomId);
+    }
+
+
+
+
+
 }

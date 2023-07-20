@@ -1,10 +1,9 @@
 package com.example.springdatademoex.services.impl;
 
 import com.example.springdatademoex.models.entities.*;
-import com.example.springdatademoex.repositories.AuthorRepository;
 import com.example.springdatademoex.repositories.BookRepository;
-import com.example.springdatademoex.repositories.CategoryRepository;
 import com.example.springdatademoex.services.BookService;
+import com.example.springdatademoex.services.CategoryService;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -14,23 +13,21 @@ import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Random;
+import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 @Service
 public class BookServiceImpl implements BookService {
     private final BookRepository bookRepository;
     private final AuthorServiceImpl authorService;
-    private final CategoryRepository categoryRepository;
+    private final CategoryService categoryService;
 
     public BookServiceImpl(BookRepository bookRepository,
-                           AuthorRepository authorRepository, AuthorServiceImpl authorService, CategoryRepository categoryRepository) {
+                           AuthorServiceImpl authorService, CategoryService categoryRepository) {
         this.bookRepository = bookRepository;
         this.authorService = authorService;
-        this.categoryRepository = categoryRepository;
+        this.categoryService = categoryRepository;
     }
 
     @Override
@@ -47,6 +44,24 @@ public class BookServiceImpl implements BookService {
                     bookRepository.save(book);
                 });
 
+    }
+
+    @Override
+    public List<Book> getBooksTitlesReleasedAfterYear(int year) {
+        return bookRepository.findBooksByReleaseDateAfter(LocalDate.of(year, 12, 31));
+    }
+
+    @Override
+    public List<String> getAuthorFullNameWithBookBeforeYear(int year) {
+        return bookRepository.findBooksByReleaseDateBefore(LocalDate.of(year, 1, 1))
+                .stream()
+                .map(book ->
+                        String.format("%s %s",
+                                book.getAuthor().getFirstName(),
+                                book.getAuthor().getLastName())
+
+                ).distinct()
+                .collect(Collectors.toList());
     }
 
     private Book createBook(String row) {
@@ -68,29 +83,10 @@ public class BookServiceImpl implements BookService {
 
         Author author = authorService.getRandomAuthor();
 
-        Set<Category> categories = getRandomCategories();
+        Set<Category> categories = categoryService.getRandomCategories();
 
         return new Book(title, editionType, price, copies, date,
                 ageRestriction, author, categories);
 
-    }
-
-    private Set<Category> getRandomCategories() {
-        Random random = new Random();
-
-        Set<Category> set = new HashSet<>();
-
-        int rnd = random.nextInt(1, 3);
-
-        for (int i = 0; i < rnd; i++) {
-            Long rndId = ThreadLocalRandom.current()
-                    .nextLong(1, categoryRepository.count() + 1);
-
-            set.add(categoryRepository
-                    .findById(rndId)
-                    .orElse(null));
-        }
-
-        return set;
     }
 }

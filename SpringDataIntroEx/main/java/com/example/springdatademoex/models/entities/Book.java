@@ -35,7 +35,7 @@ public class Book extends BaseEntity {
         this.categories = categories;
     }
 
-    @Column(name = "title", length = 50, nullable = false, unique = true)
+    @Column(name = "title", length = 50, nullable = false)
     public String getTitle() {
         return title;
     }
@@ -44,7 +44,7 @@ public class Book extends BaseEntity {
         this.title = title;
     }
 
-    @Column(name = "description", columnDefinition = "TEXT")
+    @Column(name = "description",length = 1000)
     public String getDescription() {
         return description;
     }

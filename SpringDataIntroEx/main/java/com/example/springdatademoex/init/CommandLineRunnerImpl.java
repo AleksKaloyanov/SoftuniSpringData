@@ -6,6 +6,8 @@ import com.example.springdatademoex.services.CategoryService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
+
 @Component
 public class CommandLineRunnerImpl implements CommandLineRunner {
 
@@ -21,8 +23,27 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
+        seedData();
+//        printBookTitlesReleasedAfterYear(2000);
+//        printAuthorFullNameWithBookBeforeYear(1990);
+
+    }
+
+    private void printAuthorFullNameWithBookBeforeYear(int year) {
+        bookService.getAuthorFullNameWithBookBeforeYear(year)
+                .forEach(System.out::println);
+    }
+
+    private void printBookTitlesReleasedAfterYear(int year) {
+        bookService.getBooksTitlesReleasedAfterYear(year)
+                .forEach(b -> {
+                    System.out.println(b.getTitle());
+                });
+    }
+
+    private void seedData() throws IOException {
         categoryService.seedCategories();
         authorService.seedAuthors();
-//        bookService.seedBooks();
+        bookService.seedBooks();
     }
 }
